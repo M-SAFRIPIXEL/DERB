@@ -1,0 +1,151 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net - Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Common Global Helpers
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Admin Verification for safrim629@gmail.com
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email.lower() == 'safrim629@gmail.com' &&
+        request.auth.token.email_verified == true;
+    }
+
+    // Entity Validation Helpers
+    function isValidUser(data) {
+      return data.id is string &&
+        data.id.size() <= 128 &&
+        data.email is string &&
+        data.email.size() <= 256 &&
+        (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 128)) &&
+        (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 1024));
+    }
+
+    function isValidOrder(data) {
+      return data.id is string &&
+        data.id.size() <= 128 &&
+        data.trackingNumber is string &&
+        data.trackingNumber.size() <= 64 &&
+        data.items is list &&
+        data.items.size() > 0 &&
+        data.items.size() <= 50 &&
+        data.shippingDetails is map &&
+        data.shippingDetails.fullName is string &&
+        data.shippingDetails.fullName.size() <= 128 &&
+        data.shippingDetails.phone is string &&
+        data.shippingDetails.phone.size() <= 32 &&
+        data.shippingDetails.city is string &&
+        data.shippingDetails.city.size() <= 64 &&
+        data.shippingDetails.address is string &&
+        data.shippingDetails.address.size() <= 256 &&
+        data.totalMAD is number &&
+        (data.paymentMethod == 'cod' || data.paymentMethod == 'card') &&
+        (data.status == 'confirmed' || data.status == 'processing' || data.status == 'shipped' || data.status == 'delivered');
+    }
+
+    function isValidReview(data) {
+      return data.id is string &&
+        data.id.size() <= 128 &&
+        data.author is string &&
+        data.author.size() <= 128 &&
+        data.city is string &&
+        data.city.size() <= 64 &&
+        data.rating is number &&
+        data.rating >= 1 &&
+        data.rating <= 5 &&
+        data.comment is string &&
+        data.comment.size() <= 1000 &&
+        data.productPurchased is string &&
+        data.productPurchased.size() <= 128;
+    }
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow create: if isOwner(userId) && isValidId(userId) && isValidUser(incoming()) && incoming().id == userId;
+      allow update: if (isOwner(userId) && isValidUser(incoming()) && incoming().id == existing().id &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'photoURL'])) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // 2. Orders Collection
+    match /orders/{orderId} {
+      allow get: if true;
+      allow list: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
+      allow create: if isValidId(orderId) && isValidOrder(incoming()) && incoming().id == orderId;
+      allow update, delete: if isAdmin();
+    }
+
+    // 3. Products Catalog Collection (Admin Managed)
+    match /products/{productId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && isValidId(productId);
+    }
+
+    // 4. Promo Codes Collection (Admin Managed)
+    match /promo_codes/{codeId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && isValidId(codeId);
+    }
+
+    // 5. Store Settings Collection (Admin Managed)
+    match /store_settings/{settingId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin() && isValidId(settingId);
+    }
+
+    // 6. Reviews Collection
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isValidId(reviewId) && isValidReview(incoming()) && incoming().id == reviewId;
+      allow update, delete: if isAdmin();
+    }
+
+    // 7. Newsletter Subscribers Collection
+    match /newsletter_subscribers/{subscriberId} {
+      allow read: if isAdmin();
+      allow create: if isValidId(subscriberId) && incoming().id == subscriberId &&
+        incoming().email is string && incoming().email.size() <= 256;
+      allow update, delete: if isAdmin();
+    }
+
+    // 8. User Active Carts Collection
+    match /user_carts/{userId} {
+      allow get, write: if (isOwner(userId) && isValidId(userId)) || isAdmin();
+      allow list, delete: if isOwner(userId) || isAdmin();
+    }
+
+    // 9. User Active Wishlists Collection
+    match /user_wishlists/{userId} {
+      allow get, write: if (isOwner(userId) && isValidId(userId)) || isAdmin();
+      allow list, delete: if isOwner(userId) || isAdmin();
+    }
+
+  }
+}

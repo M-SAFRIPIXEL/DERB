@@ -1,0 +1,190 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 256 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "photoURL": { "type": "string", "maxLength": 1024 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "email"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order details for streetwear purchases in Morocco",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "trackingNumber": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "customerEmail": { "type": "string", "format": "email", "maxLength": 256 },
+        "items": { "type": "array", "description": "List of ordered items with sizing and color" },
+        "shippingDetails": {
+          "type": "object",
+          "properties": {
+            "fullName": { "type": "string", "maxLength": 128 },
+            "phone": { "type": "string", "maxLength": 32 },
+            "city": { "type": "string", "maxLength": 64 },
+            "address": { "type": "string", "maxLength": 256 },
+            "postalCode": { "type": "string", "maxLength": 32 },
+            "deliveryNotes": { "type": "string", "maxLength": 512 }
+          },
+          "required": ["fullName", "phone", "city", "address"]
+        },
+        "paymentMethod": { "type": "string", "enum": ["cod", "card"] },
+        "subtotalMAD": { "type": "number" },
+        "shippingFeeMAD": { "type": "number" },
+        "discountMAD": { "type": "number" },
+        "totalMAD": { "type": "number" },
+        "promoCodeApplied": { "type": "string", "maxLength": 32 },
+        "status": { "type": "string", "enum": ["confirmed", "processing", "shipped", "delivered"] },
+        "estimatedDelivery": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "trackingNumber", "items", "shippingDetails", "paymentMethod", "totalMAD", "status", "createdAt"]
+    },
+    "CustomerReview": {
+      "title": "CustomerReview",
+      "description": "Verified customer review and streetwear feedback",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "author": { "type": "string", "maxLength": 128 },
+        "city": { "type": "string", "maxLength": 64 },
+        "rating": { "type": "number" },
+        "comment": { "type": "string", "maxLength": 1000 },
+        "arabicComment": { "type": "string", "maxLength": 1000 },
+        "productPurchased": { "type": "string", "maxLength": 128 },
+        "fitFeedback": { "type": "string", "maxLength": 64 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "author", "city", "rating", "comment", "productPurchased", "createdAt"]
+    },
+    "NewsletterSubscriber": {
+      "title": "NewsletterSubscriber",
+      "description": "Subscriber for DERB exclusive streetwear drops",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "format": "email", "maxLength": 256 },
+        "subscribedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "email", "subscribedAt"]
+    },
+    "UserCart": {
+      "title": "UserCart",
+      "description": "User shopping bag state",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "items": { "type": "array" },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "userId", "items"]
+    },
+    "UserWishlist": {
+      "title": "UserWishlist",
+      "description": "User saved grails and wishlist",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "productIds": { "type": "array" },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "userId", "productIds"]
+    },
+    "CustomProduct": {
+      "title": "CustomProduct",
+      "description": "Store products and apparel items managed by admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "arabicName": { "type": "string", "maxLength": 128 },
+        "category": { "type": "string", "maxLength": 64 },
+        "priceMAD": { "type": "number" },
+        "originalPriceMAD": { "type": "number" },
+        "stockCount": { "type": "number" },
+        "gsm": { "type": "number" },
+        "inStock": { "type": "boolean" },
+        "description": { "type": "string", "maxLength": 2000 },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "name", "priceMAD", "stockCount", "gsm", "inStock"]
+    },
+    "PromoCode": {
+      "title": "PromoCode",
+      "description": "Store discount and promo campaigns",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "code": { "type": "string", "maxLength": 64 },
+        "discountType": { "type": "string", "enum": ["percentage", "fixed"] },
+        "discountValue": { "type": "number" },
+        "minOrderMAD": { "type": "number" },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "code", "discountType", "discountValue", "isActive"]
+    },
+    "StoreSettings": {
+      "title": "StoreSettings",
+      "description": "Global store announcement and contact settings",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "announcementAr": { "type": "string", "maxLength": 500 },
+        "announcementEn": { "type": "string", "maxLength": 500 },
+        "whatsappNumber": { "type": "string", "maxLength": 64 },
+        "freeShippingThreshold": { "type": "number" },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "announcementAr", "whatsappNumber"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles"
+    },
+    "/orders/{orderId}": {
+      "schema": { "$ref": "#/entities/Order" },
+      "description": "Orders placed by customers"
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/CustomProduct" },
+      "description": "Products catalog managed by admin"
+    },
+    "/promo_codes/{codeId}": {
+      "schema": { "$ref": "#/entities/PromoCode" },
+      "description": "Store promo codes and discount vouchers"
+    },
+    "/store_settings/{settingId}": {
+      "schema": { "$ref": "#/entities/StoreSettings" },
+      "description": "Global store announcements and configuration"
+    },
+    "/reviews/{reviewId}": {
+      "schema": { "$ref": "#/entities/CustomerReview" },
+      "description": "Customer reviews and feedback"
+    },
+    "/newsletter_subscribers/{subscriberId}": {
+      "schema": { "$ref": "#/entities/NewsletterSubscriber" },
+      "description": "VIP drop newsletter subscribers"
+    },
+    "/user_carts/{userId}": {
+      "schema": { "$ref": "#/entities/UserCart" },
+      "description": "User active cart state"
+    },
+    "/user_wishlists/{userId}": {
+      "schema": { "$ref": "#/entities/UserWishlist" },
+      "description": "User active wishlist state"
+    }
+  }
+}
