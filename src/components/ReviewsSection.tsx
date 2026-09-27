@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Star, CheckCircle, Quote, Plus, X, MessageSquare, Send } from 'lucide-react';
-import { CUSTOMER_REVIEWS } from '../data/products';
+import { CUSTOMER_REVIEWS, MOROCCAN_CITIES } from '../data/products';
 import { GraffitiCrown } from './GraffitiEmblems';
 import { useAuth } from '../context/AuthContext';
 import { addCustomerReview, fetchAllReviews, DBReview } from '../lib/firebaseService';
+import { useLanguage } from '../context/LanguageContext';
 
 export const ReviewsSection: React.FC = () => {
   const { user, login } = useAuth();
+  const { lang, dir, t } = useLanguage();
   const [reviews, setReviews] = useState<any[]>(CUSTOMER_REVIEWS);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [authorName, setAuthorName] = useState<string>('');
@@ -19,13 +21,11 @@ export const ReviewsSection: React.FC = () => {
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Load reviews from Firestore
   useEffect(() => {
     async function load() {
       try {
         const firestoreReviews = await fetchAllReviews();
         if (firestoreReviews && firestoreReviews.length > 0) {
-          // Merge custom reviews at the beginning
           setReviews([...firestoreReviews, ...CUSTOMER_REVIEWS]);
         }
       } catch (err) {
@@ -67,7 +67,7 @@ export const ReviewsSection: React.FC = () => {
 
       await addCustomerReview(newReview);
       setReviews((prev) => [newReview, ...prev]);
-      setSuccessMsg('Thank you! Your verified review is now live.');
+      setSuccessMsg(t('reviews.form.success'));
       setTimeout(() => {
         setIsModalOpen(false);
         setSuccessMsg(null);
@@ -88,10 +88,10 @@ export const ReviewsSection: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 sm:mb-12">
           <div>
             <div className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#CCFF00] mb-2 font-kvant">
-              <GraffitiCrown size={18} /> VERIFIED MOROCCAN BUYERS
+              <GraffitiCrown size={18} /> {t('reviews.badge')}
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black font-display tracking-tight text-white uppercase">
-              WHAT THE STREETS ARE SAYING
+              {t('reviews.title')}
             </h2>
           </div>
           <div className="flex items-center gap-3">
@@ -99,7 +99,7 @@ export const ReviewsSection: React.FC = () => {
               onClick={handleOpenModal}
               className="px-4 py-2.5 bg-[#CCFF00] hover:bg-[#B8E600] text-black text-xs font-black uppercase rounded-xl transition shadow-lg flex items-center gap-1.5 cursor-pointer font-kvant"
             >
-              <Plus className="w-4 h-4" /> Write a Review
+              <Plus className="w-4 h-4" /> {t('reviews.writeReview')}
             </button>
 
             <div className="flex items-center gap-2 p-3 bg-[#141414] rounded-2xl border border-[#262626] shadow-md">
@@ -109,7 +109,7 @@ export const ReviewsSection: React.FC = () => {
                 ))}
               </div>
               <span className="font-black text-sm text-white font-kvant">4.95 / 5.0</span>
-              <span className="text-xs text-white/50">• {reviews.length}+ Reviews in Morocco</span>
+              <span className="text-xs text-white/50">• {reviews.length}+ {t('reviews.reviewsCount')}</span>
             </div>
           </div>
         </div>
@@ -122,7 +122,6 @@ export const ReviewsSection: React.FC = () => {
               className="p-6 bg-[#141414] rounded-3xl border border-[#242424] hover:border-[#CCFF00]/30 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between"
             >
               <div>
-                {/* Rating & Verified */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex text-[#CCFF00]">
                     {[...Array(rev.rating || 5)].map((_, i) => (
@@ -179,10 +178,10 @@ export const ReviewsSection: React.FC = () => {
               </button>
 
               <div className="flex items-center gap-2 text-xs font-black text-[#CCFF00] uppercase tracking-wider mb-2 font-kvant">
-                <MessageSquare className="w-4 h-4" /> Share Your Fit Feedback
+                <MessageSquare className="w-4 h-4" /> {t('reviews.form.reviewEn')}
               </div>
               <h3 className="text-2xl font-black font-display uppercase tracking-tight text-white mb-4">
-                Leave a Verified Review
+                {t('reviews.writeReview')}
               </h3>
 
               {successMsg ? (
@@ -192,7 +191,7 @@ export const ReviewsSection: React.FC = () => {
               ) : (
                 <form onSubmit={handleSubmitReview} className="space-y-4 text-xs">
                   <div>
-                    <label className="block text-white/70 font-bold mb-1">Your Name / الاسم *</label>
+                    <label className="block text-white/70 font-bold mb-1">{t('reviews.form.name')}</label>
                     <input
                       type="text"
                       required
@@ -205,23 +204,22 @@ export const ReviewsSection: React.FC = () => {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-white/70 font-bold mb-1">City / المدينة *</label>
+                      <label className="block text-white/70 font-bold mb-1">{t('reviews.form.city')}</label>
                       <select
                         value={cityName}
                         onChange={(e) => setCityName(e.target.value)}
                         className="w-full p-2.5 bg-[#1C1C1C] border border-[#2C2C2C] rounded-xl text-white focus:outline-none focus:border-[#CCFF00]"
                       >
-                        <option value="Casablanca">Casablanca (الدار البيضاء)</option>
-                        <option value="Rabat">Rabat (الرباط)</option>
-                        <option value="Marrakech">Marrakech (مراكش)</option>
-                        <option value="Tangier">Tangier (طنجة)</option>
-                        <option value="Fes">Fes (فاس)</option>
-                        <option value="Agadir">Agadir (أكادير)</option>
+                        {MOROCCAN_CITIES.slice(0, 6).map((c) => (
+                          <option key={c.name} value={c.name}>
+                            {lang === 'ar' ? `${c.arabicName || c.name} (${c.name})` : `${c.name} (${c.arabicName || c.name})`}
+                          </option>
+                        ))}
                       </select>
                     </div>
 
                     <div>
-                      <label className="block text-white/70 font-bold mb-1">Rating / النجوم *</label>
+                      <label className="block text-white/70 font-bold mb-1">{t('reviews.form.rating')}</label>
                       <div className="flex items-center gap-1 pt-1.5">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <button
@@ -242,7 +240,7 @@ export const ReviewsSection: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-white/70 font-bold mb-1">Product Purchased *</label>
+                    <label className="block text-white/70 font-bold mb-1">{t('reviews.form.product')}</label>
                     <input
                       type="text"
                       value={productPurchased}
@@ -252,7 +250,7 @@ export const ReviewsSection: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-white/70 font-bold mb-1">Review in English / French *</label>
+                    <label className="block text-white/70 font-bold mb-1">{t('reviews.form.reviewEn')}</label>
                     <textarea
                       required
                       rows={3}
@@ -264,7 +262,7 @@ export const ReviewsSection: React.FC = () => {
                   </div>
 
                   <div>
-                    <label className="block text-white/70 font-bold mb-1">تعليق بالدارجة المغربية (اختياري)</label>
+                    <label className="block text-white/70 font-bold mb-1">{t('reviews.form.reviewAr')}</label>
                     <input
                       dir="rtl"
                       type="text"
@@ -280,7 +278,7 @@ export const ReviewsSection: React.FC = () => {
                     disabled={submitting}
                     className="w-full py-3.5 bg-[#CCFF00] hover:bg-[#B8E600] text-black font-black uppercase text-sm rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer font-kvant mt-4"
                   >
-                    {submitting ? 'Posting Review...' : 'Submit Verified Review'}
+                    {submitting ? t('reviews.form.posting') : t('reviews.form.submit')}
                     <Send className="w-4 h-4" />
                   </button>
                 </form>

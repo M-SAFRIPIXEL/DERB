@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { DerbLogo } from './DerbLogo';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 interface NavbarProps {
   onOpenCart: () => void;
@@ -28,8 +29,6 @@ interface NavbarProps {
   onNavigateSection: (sectionId: string) => void;
 }
 
-export type Language = 'ar' | 'en';
-
 export const Navbar: React.FC<NavbarProps> = ({
   onOpenCart,
   onOpenWishlist,
@@ -42,75 +41,39 @@ export const Navbar: React.FC<NavbarProps> = ({
   onNavigateSection,
 }) => {
   const { user, isAdmin, login, logout } = useAuth();
+  const { lang, setLang, dir, t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false);
-  const [lang, setLang] = useState<Language>('ar');
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const navLinks = [
-    {
-      labelAr: 'الرئيسية',
-      labelEn: 'Home',
-      sectionId: 'hero',
-    },
-    {
-      labelAr: 'الإصدارات',
-      labelEn: 'Drops',
-      sectionId: 'shop',
-      badgeAr: 'جديد',
-      badgeEn: 'NEW',
-    },
-    {
-      labelAr: 'التصنيفات',
-      labelEn: 'Categories',
-      sectionId: 'categories',
-    },
-    {
-      labelAr: 'ثقافة الشارع',
-      labelEn: 'The Culture',
-      sectionId: 'collections',
-    },
-    {
-      labelAr: 'نادي الدرب',
-      labelEn: 'DERB Club',
-      sectionId: 'club',
-    },
-    {
-      labelAr: 'التقييمات',
-      labelEn: 'Reviews',
-      sectionId: 'reviews',
-    },
+    { key: 'nav.home', sectionId: 'hero' },
+    { key: 'nav.drops', sectionId: 'shop', badgeKey: 'nav.dropsBadge' },
+    { key: 'nav.categories', sectionId: 'categories' },
+    { key: 'nav.culture', sectionId: 'collections' },
+    { key: 'nav.club', sectionId: 'club' },
+    { key: 'nav.reviews', sectionId: 'reviews' },
   ];
 
   return (
     <>
-      {/* Top Banner Notice (High Voltage Tape) */}
-      <div className="bg-[#CCFF00] text-[#0A0A0A] py-1 px-4 text-center text-[10px] sm:text-[11px] font-black tracking-wider flex items-center justify-center gap-3 select-none overflow-hidden font-arabic">
-        <span className="flex items-center gap-2 font-extrabold" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-          <span>⚡</span>
-          <span>
-            {lang === 'ar'
-              ? 'طاقة بلا حدود • الدفع عند الاستلام كاش في جميع مدن المغرب • قطن فاخر 500GSM'
-              : 'NO RULES JUST ENERGY • CASH ON DELIVERY MOROCCO • 500GSM LUXURY FLEECE'}
-          </span>
+      {/* Top Announcement Banner */}
+      <div className="bg-[#CCFF00] text-[#0A0A0A] py-1.5 px-3 text-center text-[10.5px] sm:text-xs font-black tracking-normal sm:tracking-wider flex items-center justify-center gap-3 select-none overflow-hidden font-arabic">
+        <span className="flex items-center gap-1.5 sm:gap-2 font-extrabold truncate" dir={dir}>
+          <span className="text-xs">⚡</span>
+          <span className="truncate">{t('banner.announcement')}</span>
         </span>
         <span className="hidden md:inline-block opacity-40">|</span>
-        <span className="hidden md:inline-flex items-center gap-1 font-bold" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-          {lang === 'ar'
-            ? 'توصيل سريع ومجاني للدار البيضاء والرباط للطلبات فوق 500 درهم'
-            : 'FREE 24H DELIVERY IN CASABLANCA & RABAT OVER 500 MAD'}
+        <span className="hidden md:inline-flex items-center gap-1 font-bold text-[11px]" dir={dir}>
+          {t('banner.delivery')}
         </span>
       </div>
 
@@ -118,103 +81,103 @@ export const Navbar: React.FC<NavbarProps> = ({
       <header
         className={`sticky top-0 z-40 w-full transition-all duration-300 ${
           isScrolled
-            ? 'bg-[#0A0A0A]/95 backdrop-blur-md border-b border-[#222] shadow-2xl py-3 sm:py-3.5'
-            : 'bg-[#0A0A0A]/90 backdrop-blur-md border-b border-[#1A1A1A] py-4 sm:py-5'
+            ? 'bg-[#0A0A0A]/95 backdrop-blur-md border-b border-[#222] shadow-2xl py-2 sm:py-3'
+            : 'bg-[#0A0A0A]/90 backdrop-blur-md border-b border-[#1A1A1A] py-2.5 sm:py-3.5'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            {/* Left: Mobile Menu Button & Desktop Navigation Links (Arabic as Main) */}
-            <div className="flex items-center gap-6">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-4">
+            
+            {/* Left for Mobile: Hamburger Button */}
+            <div className="flex items-center lg:hidden shrink-0">
               <button
                 type="button"
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="lg:hidden p-2 text-white hover:text-[#CCFF00] hover:bg-[#1A1A1A] rounded-xl transition flex items-center gap-1.5"
+                className="min-h-[44px] min-w-[44px] p-2 text-white hover:text-[#CCFF00] hover:bg-[#1A1A1A] rounded-xl transition flex items-center justify-center touch-manipulation active:scale-95"
                 aria-label="Open menu"
               >
-                <Menu className="w-6 h-6" />
-                <span className="text-xs font-bold font-arabic text-white/80 lg:hidden">القائمة</span>
+                <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
-
-              {/* Desktop Nav Links */}
-              <nav className="hidden lg:flex items-center gap-6 text-sm font-black text-white/80" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
-                {navLinks.map((link) => {
-                  const label = lang === 'ar' ? link.labelAr : link.labelEn;
-                  const badge = lang === 'ar' ? link.badgeAr : link.badgeEn;
-                  return (
-                    <button
-                      key={link.sectionId}
-                      onClick={() => onNavigateSection(link.sectionId)}
-                      className="hover:text-[#CCFF00] transition-colors relative py-1 flex items-center gap-1.5 font-arabic text-[14px] font-bold tracking-normal group"
-                    >
-                      <span className="group-hover:translate-y-[-1px] transition-transform">{label}</span>
-                      {badge && (
-                        <span className="px-1.5 py-0.2 text-[9px] font-extrabold bg-[#CCFF00] text-black rounded-sm leading-tight font-arabic">
-                          {badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </nav>
             </div>
 
-            {/* Center: Brand Logo with official vector brand mark */}
+            {/* Brand Logo & Full Brand Name: Guaranteed full visibility on Desktop and Mobile */}
             <div
               onClick={() => onNavigateSection('hero')}
-              className="cursor-pointer text-center group flex items-center gap-2.5 sm:gap-3.5"
+              className="cursor-pointer group flex items-center gap-2 sm:gap-3 select-none touch-manipulation shrink-0 whitespace-nowrap py-1"
             >
-              <span className="text-3xl sm:text-4xl lg:text-5xl font-black font-kvant tracking-tighter text-white group-hover:text-[#CCFF00] transition-colors">
-                DERB
-              </span>
-              <DerbLogo className="h-7 sm:h-8 lg:h-9 w-auto group-hover:scale-105 transition-transform drop-shadow-[0_0_12px_rgba(204,255,0,0.3)]" />
-              <span dir="rtl" className="text-2xl sm:text-3xl lg:text-4xl font-black font-arabic-title text-[#CCFF00] tracking-normal leading-tight drop-shadow-[0_2px_14px_rgba(204,255,0,0.25)] group-hover:scale-105 transition-transform">
-                الدرب
-              </span>
+              <DerbLogo className="h-6 sm:h-7 lg:h-8 w-auto group-hover:scale-105 transition-transform drop-shadow-[0_0_12px_rgba(204,255,0,0.3)] shrink-0" />
+              {lang === 'ar' ? (
+                <span dir="rtl" className="text-xl sm:text-2xl lg:text-[28px] font-black font-arabic-title text-[#CCFF00] tracking-normal leading-tight drop-shadow-[0_2px_14px_rgba(204,255,0,0.25)] group-hover:scale-105 transition-transform whitespace-nowrap inline-block">
+                  {t('brand.name')}
+                </span>
+              ) : (
+                <span className="text-xl sm:text-2xl lg:text-[28px] font-black font-kvant tracking-tight text-white group-hover:text-[#CCFF00] transition-colors whitespace-nowrap inline-block">
+                  {t('brand.nameEn')}
+                </span>
+              )}
             </div>
 
-            {/* Right: Actions (Language Switcher, Search, Wishlist, Track Orders, Account, Cart) */}
-            <div className="flex items-center gap-1.5 sm:gap-2.5">
-              {/* Language Switcher Pill */}
+            {/* Center: Desktop Navigation Links */}
+            <nav className="hidden lg:flex items-center justify-center gap-4 xl:gap-6 flex-1 text-sm text-white/80" dir={dir}>
+              {navLinks.map((link) => (
+                <button
+                  key={link.sectionId}
+                  onClick={() => onNavigateSection(link.sectionId)}
+                  className="hover:text-[#CCFF00] transition-colors relative py-1.5 flex items-center gap-1.5 font-arabic text-[13px] xl:text-[14px] font-bold tracking-normal group whitespace-nowrap"
+                >
+                  <span className="group-hover:translate-y-[-1px] transition-transform">{t(link.key)}</span>
+                  {link.badgeKey && (
+                    <span className="px-1.5 py-0.5 text-[9px] font-black uppercase bg-[#CCFF00] text-black rounded-sm leading-none font-arabic">
+                      {t(link.badgeKey)}
+                    </span>
+                  )}
+                  <span className="absolute bottom-0 inset-x-0 h-[2px] bg-[#CCFF00] scale-x-0 group-hover:scale-x-100 transition-transform origin-center rounded-full" />
+                </button>
+              ))}
+            </nav>
+
+            {/* Right: Actions */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* Fast Language Switcher (Mobile & Desktop) */}
               <button
                 type="button"
                 onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')}
-                className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#181818] border border-[#2A2A2A] hover:border-[#CCFF00] text-white/80 hover:text-[#CCFF00] text-xs font-bold transition font-arabic"
-                title={lang === 'ar' ? 'تبديل للإنجليزية' : 'Switch to Arabic'}
+                className="flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-xl bg-[#141414] border border-[#262626] hover:border-[#CCFF00]/50 text-white/90 hover:text-[#CCFF00] text-[11px] sm:text-xs font-bold transition font-arabic min-h-[36px] sm:min-h-[38px] touch-manipulation active:scale-95"
+                title={lang === 'ar' ? 'Switch to English' : 'تبديل للعربية'}
               >
-                <Globe className="w-3.5 h-3.5 text-[#CCFF00]" />
-                <span>{lang === 'ar' ? 'العربية' : 'EN'}</span>
+                <Globe className="w-3.5 h-3.5 text-[#CCFF00] shrink-0" />
+                <span className="font-bold">{lang === 'ar' ? 'EN' : 'عربي'}</span>
               </button>
 
-              {/* Search Button */}
+              {/* Search (Desktop only - mobile uses bottom nav) */}
               <button
                 type="button"
                 onClick={onOpenSearch}
-                className="p-2 sm:p-2.5 rounded-full text-white/80 hover:text-[#CCFF00] hover:bg-[#1A1A1A] transition"
-                aria-label="Search"
-                title={lang === 'ar' ? 'بحث في المنتجات' : 'Search Products'}
+                className="hidden sm:flex p-2.5 rounded-full text-white/80 hover:text-[#CCFF00] hover:bg-[#1A1A1A] transition min-h-[44px] min-w-[44px] items-center justify-center"
+                aria-label={t('action.search')}
+                title={t('action.search')}
               >
                 <Search className="w-5 h-5" />
               </button>
 
-              {/* Order Tracking Button */}
+              {/* Track Orders */}
               <button
                 type="button"
                 onClick={onOpenOrders}
-                className="p-2 sm:p-2.5 rounded-full text-white/80 hover:text-[#CCFF00] hover:bg-[#1A1A1A] transition flex items-center gap-1"
-                aria-label="Track Order"
-                title={lang === 'ar' ? 'تتبع طلبياتك وشحناتك' : 'Track Package & Orders'}
+                className="hidden sm:flex p-2.5 rounded-full text-white/80 hover:text-[#CCFF00] hover:bg-[#1A1A1A] transition min-h-[44px] min-w-[44px] items-center justify-center"
+                aria-label={t('action.track')}
+                title={t('action.track')}
               >
                 <Package className="w-5 h-5" />
               </button>
 
-              {/* Wishlist Button */}
+              {/* Wishlist (Desktop) */}
               <button
                 type="button"
                 onClick={onOpenWishlist}
-                className="relative p-2 sm:p-2.5 rounded-full text-white/80 hover:text-[#CCFF00] hover:bg-[#1A1A1A] transition"
-                aria-label="Wishlist"
-                title={lang === 'ar' ? 'قائمة الرغبات والمفضلة' : 'Wishlist'}
+                className="hidden sm:flex relative p-2.5 rounded-full text-white/80 hover:text-[#CCFF00] hover:bg-[#1A1A1A] transition min-h-[44px] min-w-[44px] items-center justify-center"
+                aria-label={t('action.wishlist')}
+                title={t('action.wishlist')}
               >
                 <Heart className="w-5 h-5" />
                 {wishlistCount > 0 && (
@@ -224,12 +187,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </button>
 
-              {/* User Account Button */}
+              {/* User Account */}
               <div className="relative">
                 {user ? (
                   <button
                     onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                    className="p-1 sm:p-1.5 rounded-full border border-[#333] hover:border-[#CCFF00] transition flex items-center gap-1.5 bg-[#161616]"
+                    className="p-1 sm:p-1.5 rounded-full border border-[#333] hover:border-[#CCFF00] transition flex items-center gap-1.5 bg-[#161616] min-h-[38px] min-w-[38px] justify-center"
                   >
                     {user.photoURL ? (
                       <img
@@ -238,26 +201,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                         className="w-6 h-6 rounded-full object-cover"
                       />
                     ) : (
-                      <User className="w-5 h-5 text-[#CCFF00]" />
+                      <User className="w-4 h-4 text-[#CCFF00]" />
                     )}
                   </button>
                 ) : (
                   <button
                     onClick={login}
-                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-[#1A1A1A] hover:bg-[#252525] border border-[#333] hover:border-[#CCFF00] text-white/90 hover:text-[#CCFF00] rounded-xl text-xs font-bold transition font-arabic"
+                    className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-[#1A1A1A] hover:bg-[#252525] border border-[#333] hover:border-[#CCFF00] text-white/90 hover:text-[#CCFF00] rounded-xl text-xs font-bold transition font-arabic min-h-[38px]"
                   >
                     <LogIn className="w-3.5 h-3.5 text-[#CCFF00]" />
-                    <span>{lang === 'ar' ? 'تسجيل الدخول' : 'SIGN IN'}</span>
+                    <span>{t('action.signIn')}</span>
                   </button>
                 )}
 
                 {/* User Dropdown */}
                 {user && isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-52 bg-[#161616] border border-[#2A2A2A] rounded-2xl p-2 shadow-2xl z-50 text-xs space-y-1 animate-fade-in font-arabic" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+                  <div className="absolute right-0 mt-2 w-52 bg-[#161616] border border-[#2A2A2A] rounded-2xl p-2 shadow-2xl z-50 text-xs space-y-1 animate-fade-in font-arabic" dir={dir}>
                     <div className="p-2 border-b border-[#242424]">
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-white block truncate">
-                          {user.displayName || (lang === 'ar' ? 'عضو الدرب' : 'Streetwear User')}
+                          {user.displayName || t('user.member')}
                         </span>
                         {isAdmin && (
                           <span className="px-1.5 py-0.2 bg-[#CCFF00] text-black font-black text-[9px] rounded">
@@ -270,7 +233,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                       </span>
                     </div>
 
-                    {/* Admin Dashboard Entry */}
                     {isAdmin && (
                       <button
                         onClick={() => {
@@ -280,7 +242,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         className="w-full text-right p-2 rounded-lg bg-[#CCFF00]/10 hover:bg-[#CCFF00]/20 text-[#CCFF00] font-black flex items-center gap-2 border border-[#CCFF00]/30 transition"
                       >
                         <ShieldCheck className="w-4 h-4 text-[#CCFF00]" />
-                        <span>{lang === 'ar' ? 'لوحة تحكم المتجر (Admin)' : 'Admin Dashboard'}</span>
+                        <span>{t('action.admin')}</span>
                       </button>
                     )}
 
@@ -292,7 +254,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       className="w-full text-right p-2 rounded-lg hover:bg-[#222] text-white flex items-center gap-2"
                     >
                       <Package className="w-4 h-4 text-[#CCFF00]" />
-                      <span>{lang === 'ar' ? 'طلبياتي السابقة' : 'My Orders'}</span>
+                      <span>{t('action.myOrders')}</span>
                     </button>
 
                     <button
@@ -303,19 +265,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                       className="w-full text-right p-2 rounded-lg hover:bg-red-950/40 text-red-400 flex items-center gap-2"
                     >
                       <LogOut className="w-4 h-4" />
-                      <span>{lang === 'ar' ? 'تسجيل الخروج' : 'Log Out'}</span>
+                      <span>{t('action.signOut')}</span>
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* Admin Button on Header (if logged in as admin) */}
+              {/* Admin Button (Desktop) */}
               {isAdmin && (
                 <button
                   type="button"
                   onClick={onOpenAdmin}
-                  className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#181818] to-[#222] hover:border-[#CCFF00] border border-[#CCFF00]/50 text-[#CCFF00] font-black text-xs rounded-xl shadow-lg transition active:scale-95 font-arabic group"
-                  title="لوحة تحكم المشرف safrim629@gmail.com"
+                  className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-[#181818] to-[#222] hover:border-[#CCFF00] border border-[#CCFF00]/50 text-[#CCFF00] font-black text-xs rounded-xl shadow-lg transition active:scale-95 font-arabic group min-h-[38px]"
+                  title={t('action.adminPanel')}
                 >
                   <ShieldCheck className="w-4 h-4 text-[#CCFF00] group-hover:scale-110 transition-transform" />
                   <span className="font-mono text-[11px] font-bold">ADMIN</span>
@@ -326,7 +288,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={onOpenCart}
-                className="flex items-center gap-2 px-3.5 py-2 bg-[#CCFF00] hover:bg-[#B8E600] text-black font-black text-xs rounded-xl shadow-lg hover:shadow-[#CCFF00]/20 transition active:scale-95 font-arabic font-extrabold"
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-1.5 sm:py-2 bg-[#CCFF00] hover:bg-[#B8E600] text-black font-black text-xs rounded-xl shadow-lg hover:shadow-[#CCFF00]/20 transition active:scale-95 font-arabic font-extrabold min-h-[38px] sm:min-h-[42px] touch-manipulation"
                 aria-label="Shopping Bag"
               >
                 <div className="relative">
@@ -337,12 +299,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </span>
                   )}
                 </div>
-                <span>
+                <span className="hidden sm:inline">
                   {cartTotalMAD > 0
-                    ? `${cartTotalMAD} ${lang === 'ar' ? 'د.م' : 'MAD'}`
-                    : lang === 'ar'
-                    ? 'السلة'
-                    : 'CART'}
+                    ? `${cartTotalMAD} ${t('currency.mad')}`
+                    : t('action.cart')}
                 </span>
               </button>
             </div>
@@ -350,51 +310,55 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </header>
 
-      {/* Mobile Drawer Menu (Arabic as Main) */}
+      {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md lg:hidden flex">
-          <div className="w-4/5 max-w-sm bg-[#121212] h-full shadow-2xl p-6 flex flex-col justify-between text-white border-r border-[#262626] animate-fade-in" dir="rtl">
+          <div className="w-4/5 max-w-sm bg-[#121212] h-full shadow-2xl p-5 sm:p-6 flex flex-col justify-between text-white border-r border-[#262626] animate-fade-in pb-safe overflow-y-auto" dir={dir}>
             <div>
-              {/* Top Drawer Header */}
-              <div className="flex items-center justify-between pb-6 border-b border-[#222]">
-                <div className="flex items-center gap-2.5">
-                  <span dir="rtl" className="text-2xl font-black font-arabic-title text-[#CCFF00] tracking-normal">الدرب</span>
-                  <DerbLogo className="h-7 w-auto drop-shadow-[0_0_10px_rgba(204,255,0,0.25)]" />
-                  <span className="text-2xl font-black font-kvant text-white">DERB</span>
+              {/* Drawer Header */}
+              <div className="flex items-center justify-between pb-4 border-b border-[#222]">
+                <div className="flex items-center gap-2">
+                  {lang === 'ar' ? (
+                    <span dir="rtl" className="text-xl font-black font-arabic-title text-[#CCFF00] tracking-normal">{t('brand.name')}</span>
+                  ) : (
+                    <span className="text-xl font-black font-kvant text-white">{t('brand.nameEn')}</span>
+                  )}
+                  <DerbLogo className="h-6 w-auto drop-shadow-[0_0_10px_rgba(204,255,0,0.25)]" />
                 </div>
                 <button
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 text-white/70 hover:text-white hover:bg-[#222] rounded-full"
+                  className="p-2 text-white/70 hover:text-white hover:bg-[#222] rounded-xl min-h-[44px] min-w-[44px] flex items-center justify-center touch-manipulation active:scale-95"
+                  aria-label="Close menu"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
 
               {/* Mobile Language Switcher */}
               <div className="py-3 flex items-center justify-between border-b border-[#222]">
-                <span className="text-xs text-white/60 font-arabic font-bold">اللغة / Language</span>
+                <span className="text-xs text-white/60 font-arabic font-bold">{t('lang.label')}</span>
                 <div className="flex items-center gap-1 bg-[#1A1A1A] p-1 rounded-lg border border-[#333]">
                   <button
                     onClick={() => setLang('ar')}
-                    className={`px-2.5 py-1 text-xs rounded font-arabic font-bold transition ${
+                    className={`px-3 py-1.5 text-xs rounded font-arabic font-bold transition min-h-[36px] ${
                       lang === 'ar' ? 'bg-[#CCFF00] text-black' : 'text-white/70 hover:text-white'
                     }`}
                   >
-                    العربية
+                    {t('lang.arabic')}
                   </button>
                   <button
                     onClick={() => setLang('en')}
-                    className={`px-2.5 py-1 text-xs rounded font-sans font-bold transition ${
+                    className={`px-3 py-1.5 text-xs rounded font-sans font-bold transition min-h-[36px] ${
                       lang === 'en' ? 'bg-[#CCFF00] text-black' : 'text-white/70 hover:text-white'
                     }`}
                   >
-                    EN
+                    {t('lang.english')}
                   </button>
                 </div>
               </div>
 
-              {/* Mobile Auth button */}
-              <div className="py-4 border-b border-[#222]">
+              {/* Mobile Auth */}
+              <div className="py-3 border-b border-[#222]">
                 {user ? (
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -406,36 +370,36 @@ export const Navbar: React.FC<NavbarProps> = ({
                         <span className="text-[10px] text-white/50">{user.email}</span>
                       </div>
                     </div>
-                    <button onClick={logout} className="text-xs text-red-400 font-bold p-1 font-arabic">
-                      تسجيل الخروج
+                    <button onClick={logout} className="text-xs text-red-400 font-bold p-2 min-h-[44px] font-arabic">
+                      {t('action.signOut')}
                     </button>
                   </div>
                 ) : (
                   <button
                     onClick={login}
-                    className="w-full py-2.5 bg-[#1F1F1F] border border-[#333] text-[#CCFF00] font-black text-xs rounded-xl flex items-center justify-center gap-2 font-arabic"
+                    className="w-full py-3 bg-[#1F1F1F] border border-[#333] text-[#CCFF00] font-black text-xs rounded-xl flex items-center justify-center gap-2 font-arabic min-h-[44px]"
                   >
-                    <LogIn className="w-4 h-4" /> تسجيل الدخول عبر Google
+                    <LogIn className="w-4 h-4" /> {t('action.signInGoogle')}
                   </button>
                 )}
               </div>
 
-              {/* Mobile Navigation Links (Arabic Main) */}
-              <nav className="py-4 space-y-2 font-arabic">
+              {/* Mobile Navigation Links */}
+              <nav className="py-3 space-y-1 font-arabic">
                 {isAdmin && (
                   <button
                     onClick={() => {
                       setIsMobileMenuOpen(false);
                       onOpenAdmin();
                     }}
-                    className="w-full text-right py-2.5 text-sm font-black text-black bg-[#CCFF00] hover:bg-[#b8e600] transition flex items-center justify-between px-3 rounded-xl shadow-lg shadow-[#CCFF00]/10"
+                    className="w-full text-right py-3 text-sm font-black text-black bg-[#CCFF00] hover:bg-[#b8e600] transition flex items-center justify-between px-3.5 rounded-xl shadow-lg shadow-[#CCFF00]/10 min-h-[44px]"
                   >
                     <span className="flex items-center gap-2">
                       <ShieldCheck className="w-4 h-4 text-black" />
-                      <span>لوحة التحكم والإدارة (Admin)</span>
+                      <span>{t('action.adminHub')}</span>
                     </span>
                     <span className="text-[10px] font-mono bg-black text-[#CCFF00] px-2 py-0.5 rounded font-black">
-                      HUB
+                      ADMIN
                     </span>
                   </button>
                 )}
@@ -445,53 +409,45 @@ export const Navbar: React.FC<NavbarProps> = ({
                     setIsMobileMenuOpen(false);
                     onOpenOrders();
                   }}
-                  className="w-full text-right py-2.5 text-sm font-black text-[#CCFF00] hover:text-white transition flex items-center justify-between bg-[#181818] px-3 rounded-xl border border-[#282828]"
+                  className="w-full text-right py-3 text-sm font-black text-[#CCFF00] hover:text-white transition flex items-center justify-between bg-[#181818] px-3.5 rounded-xl border border-[#282828] min-h-[44px]"
                 >
                   <span className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-[#CCFF00]" />
-                    <span>تتبع الشحنة والطلبيات</span>
+                    <span>{t('action.trackShipment')}</span>
                   </span>
-                  <span className="text-[10px] font-sans text-white/40">Track</span>
+                  <span className="text-[10px] font-mono text-white/40">Track</span>
                 </button>
 
-                {navLinks.map((link) => {
-                  const label = lang === 'ar' ? link.labelAr : link.labelEn;
-                  const subLabel = lang === 'ar' ? link.labelEn : link.labelAr;
-                  const badge = lang === 'ar' ? link.badgeAr : link.badgeEn;
-                  return (
-                    <button
-                      key={link.sectionId}
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        onNavigateSection(link.sectionId);
-                      }}
-                      className="w-full text-right py-2.5 px-3 text-base font-bold text-white hover:text-[#CCFF00] hover:bg-[#181818] rounded-xl transition flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#CCFF00]/40 group-hover:bg-[#CCFF00]" />
-                        <span>{label}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {badge && (
-                          <span className="px-2 py-0.5 text-[10px] font-black bg-[#CCFF00] text-black rounded-sm">
-                            {badge}
-                          </span>
-                        )}
-                        <span className="text-[11px] text-white/40 font-sans">{subLabel}</span>
-                      </div>
-                    </button>
-                  );
-                })}
+                {navLinks.map((link) => (
+                  <button
+                    key={link.sectionId}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      onNavigateSection(link.sectionId);
+                    }}
+                    className="w-full text-right py-3 px-3.5 text-sm font-bold text-white hover:text-[#CCFF00] hover:bg-[#181818] rounded-xl transition flex items-center justify-between min-h-[44px]"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#CCFF00]/40 group-hover:bg-[#CCFF00]" />
+                      <span>{t(link.key)}</span>
+                    </div>
+                    {link.badgeKey && (
+                      <span className="px-2 py-0.5 text-[10px] font-black bg-[#CCFF00] text-black rounded-sm">
+                        {t(link.badgeKey)}
+                      </span>
+                    )}
+                  </button>
+                ))}
               </nav>
             </div>
 
             {/* Bottom Details */}
-            <div className="border-t border-[#222] pt-4 text-xs text-white/60 space-y-2.5 font-arabic">
+            <div className="border-t border-[#222] pt-3 text-xs text-white/60 space-y-2 font-arabic">
               <div className="flex items-center gap-2 text-[#CCFF00] font-bold">
                 <MapPin className="w-4 h-4 shrink-0" />
-                <span>مشغل الدار البيضاء • الدفع عند الاستلام كاش</span>
+                <span>{t('drawer.atelier')}</span>
               </div>
-              <p className="text-[11px] text-white/40">قطن فاخر 500 غرام • استبدال مجاني خلال 14 يوماً في جميع مدن المغرب</p>
+              <p className="text-[11px] text-white/40">{t('drawer.quality')}</p>
             </div>
           </div>
 

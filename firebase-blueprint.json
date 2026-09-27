@@ -67,7 +67,7 @@
     },
     "NewsletterSubscriber": {
       "title": "NewsletterSubscriber",
-      "description": "Subscriber for DERB exclusive streetwear drops",
+      "description": "Subscriber for PHILOSTORYA exclusive streetwear drops",
       "type": "object",
       "properties": {
         "id": { "type": "string", "maxLength": 128 },

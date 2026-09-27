@@ -13,7 +13,7 @@ export const DerbLogo: React.FC<DerbLogoProps> = ({
   size,
   width,
   height,
-  alt = 'DERB Logo',
+  alt = 'PHILOSTORYA Logo',
 }) => {
   const inlineStyle: React.CSSProperties = {};
   if (size) {

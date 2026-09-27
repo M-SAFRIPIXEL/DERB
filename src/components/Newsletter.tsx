@@ -43,7 +43,7 @@ export const Newsletter: React.FC = () => {
             </h2>
 
             <p className="text-xs sm:text-sm text-white/70 max-w-lg mx-auto">
-              Join the DERB Collective. Receive notifications 2 hours before limited 500GSM drops go live.
+              Join the PHILOSTORYA Collective. Receive notifications 2 hours before limited 500GSM drops go live.
             </p>
 
             {isSubscribed ? (

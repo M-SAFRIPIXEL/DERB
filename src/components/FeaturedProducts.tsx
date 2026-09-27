@@ -37,15 +37,14 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
   };
 
   const filterTabs = [
-    { id: 'all', label: 'All Drops' },
-    { id: 'hoodies', label: 'Heavyweight Hoodies' },
-    { id: 't-shirts', label: 'Oversized Tees' },
-    { id: 'pants', label: 'Bottoms & Cargo' },
-    { id: 'arabic-typography', label: 'Arabic Typography' },
-    { id: 'limited', label: 'Limited Drops' },
+    { id: 'all', label: 'All Pieces // كل القطع' },
+    { id: 't-shirts', label: '250GSM T-Shirts (متاح الآن ✨)' },
+    { id: 'hoodies', label: 'Hoodies (غير متاح)' },
+    { id: 'sweatshirts', label: 'Sweatshirts (غير متاح)' },
+    { id: 'limited', label: 'Limited Drops (غير متاح)' },
   ];
 
-  const shadowHoodieProduct = products.find((p) => p.id === 'prod-shadow-hoodie-limited') || products[0];
+  const tShirtProduct = products.find((p) => p.category === 't-shirts') || products[0];
 
   const filteredAndSortedProducts = useMemo(() => {
     let result = products.filter((p) => {
@@ -77,43 +76,47 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
     <section id="shop" className="py-14 sm:py-20 bg-[#0A0A0A] border-t border-[#1C1C1C]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Spotlight Banner: "LIMITED DROP SHADOW HOODIE" matching center screen in image */}
+        {/* Spotlight Banner: Active 250GSM 100% Cotton T-Shirt Collection */}
         <div
-          onClick={() => onSelectProduct(shadowHoodieProduct)}
+          onClick={() => onSelectProduct(tShirtProduct)}
           className="relative bg-gradient-to-r from-[#121212] to-[#1A1A1A] border border-[#2A2A2A] hover:border-[#CCFF00]/60 rounded-3xl p-6 sm:p-8 mb-14 cursor-pointer overflow-hidden shadow-2xl group transition-all"
         >
           {/* Subtle neon spray paint effect on right */}
           <div className="absolute -right-10 top-0 bottom-0 w-80 bg-[#CCFF00]/10 blur-3xl pointer-events-none" />
 
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-            {/* Left Copy matching mockup */}
+            {/* Left Copy */}
             <div className="md:col-span-7 space-y-2 z-10">
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-1 bg-[#CCFF00] text-black text-[10px] font-black uppercase rounded font-kvant flex items-center gap-1">
-                  <Zap className="w-3.5 h-3.5 fill-black" /> LIMITED DROP
+                  <Zap className="w-3.5 h-3.5 fill-black" /> ACTIVE DROP // متاح الآن
                 </span>
                 <span className="text-xs font-bold text-[#CCFF00] font-mono">
-                  ONLY 200 PIECES
+                  250GSM • 100% COTTON
                 </span>
               </div>
 
               <h3 className="text-2xl sm:text-4xl font-black font-display text-white tracking-tight uppercase">
-                SHADOW HOODIE
+                250GSM T-SHIRTS ATELIER
               </h3>
 
-              <p className="text-xs sm:text-sm text-white/70 max-w-md">
-                600GSM ultra-heavyweight fleece with distressed neon X artwork and numbered metallic plaque.
+              <p dir="rtl" className="text-base sm:text-lg font-black font-arabic text-[#CCFF00] tracking-normal">
+                المجموعة المتاحة حالياً: تيشورتات فاخرة ٢٥٠ غرام في الغراماج (١٠٠٪ قطن مغربي)
+              </p>
+
+              <p className="text-xs sm:text-sm text-white/70 max-w-md font-arabic leading-relaxed">
+                مصنوعة من قطن مغربي ممشط ١٠٠٪ عالي الكثافة بوزن ٢٥٠ غرام، مع ياقة محبوكة مقواة ٣ سم وقصة بوكسي أوفرسايز مريحة.
               </p>
 
               <div className="pt-2 flex items-center gap-3">
                 <span className="text-xl font-black text-[#CCFF00] font-kvant">
-                  950 MAD
+                  350 MAD
                 </span>
                 <button
                   type="button"
                   className="px-4 py-2 bg-[#CCFF00] text-black text-xs font-black rounded-xl hover:bg-[#B8E600] transition flex items-center gap-1 font-kvant"
                 >
-                  <span>CLAIM PIECE</span>
+                  <span>SHOP T-SHIRTS // اطلب الآن</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -135,8 +138,8 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                 onMouseMove={handleSpotlightMouseMove}
               >
                 <img
-                  src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=600&q=85"
-                  alt="Shadow Hoodie Limited Drop"
+                  src={tShirtProduct.images[0] || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=85'}
+                  alt="250GSM 100% Cotton T-Shirt Drop"
                   style={{
                     transformOrigin: `${spotlightZoomPos.x}% ${spotlightZoomPos.y}%`,
                     transform: isSpotlightZoomed ? 'scale(2.2)' : 'scale(1)',
@@ -144,7 +147,7 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({
                   className="w-full h-full object-cover transition-transform duration-200 ease-out will-change-transform"
                 />
                 <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/80 text-[#CCFF00] text-[9px] font-black rounded font-mono z-10">
-                  600GSM
+                  250GSM • 100% COTTON
                 </span>
                 <div
                   className={`absolute top-2 right-2 z-10 pointer-events-none transition-all duration-300 ${

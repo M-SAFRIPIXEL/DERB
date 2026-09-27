@@ -1,4 +1,4 @@
-# Firebase Security Specification for DERB Moroccan Streetwear
+# Firebase Security Specification for PHILOSTORYA Moroccan Streetwear
 
 ## Data Invariants
 1. **User Invariant**: User profiles in `/users/{userId}` can only be created or modified by the authenticated user matching `userId`.

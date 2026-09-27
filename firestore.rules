@@ -98,7 +98,11 @@ service cloud.firestore {
     match /orders/{orderId} {
       allow get: if true;
       allow list: if (isSignedIn() && resource.data.userId == request.auth.uid) || isAdmin();
-      allow create: if isValidId(orderId) && isValidOrder(incoming()) && incoming().id == orderId;
+      allow create: if isValidId(orderId) && isValidOrder(incoming()) && incoming().id == orderId
+        && incoming().totalMAD > 0
+        && incoming().items.size() > 0
+        && incoming().shippingDetails.fullName.size() > 0
+        && incoming().shippingDetails.phone.size() > 0;
       allow update, delete: if isAdmin();
     }
 
@@ -111,7 +115,13 @@ service cloud.firestore {
     // 4. Promo Codes Collection (Admin Managed)
     match /promo_codes/{codeId} {
       allow read: if true;
-      allow create, update, delete: if isAdmin() && isValidId(codeId);
+      allow create, update, delete: if isAdmin() && isValidId(codeId)
+        && incoming().code is string
+        && incoming().code.size() > 0
+        && incoming().code.size() <= 32
+        && incoming().discountValue is number
+        && incoming().discountValue > 0
+        && incoming().discountValue <= 100;
     }
 
     // 5. Store Settings Collection (Admin Managed)

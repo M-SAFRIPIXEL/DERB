@@ -92,15 +92,21 @@ export const CollectionsEditorial: React.FC<CollectionsEditorialProps> = ({
 
                 <div className="pt-2 border-t border-[#222] flex items-center justify-between">
                   <span className="text-[11px] font-mono text-white/40">
-                    {col.productIds.length} ITEMS IN DROP
+                    {col.id === 'col-tshirts-250gsm' ? `${col.productIds.length} ACTIVE ITEMS` : 'غير متاح حالياً'}
                   </span>
 
                   <button
                     type="button"
-                    className="px-4 py-2 bg-[#222] group-hover:bg-[#CCFF00] text-white group-hover:text-black text-xs font-black rounded-xl transition flex items-center gap-1 font-kvant"
+                    className={`px-4 py-2 text-xs font-black rounded-xl transition flex items-center gap-1 font-kvant ${
+                      col.id === 'col-tshirts-250gsm'
+                        ? 'bg-[#CCFF00] text-black shadow-lg hover:bg-white'
+                        : 'bg-[#1C1C1C] text-neutral-400 border border-[#2A2A2A]'
+                    }`}
                   >
-                    <span>EXPLORE</span>
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    <span>{col.id === 'col-tshirts-250gsm' ? 'EXPLORE DROP' : 'غير متاح الآن'}</span>
+                    {col.id === 'col-tshirts-250gsm' && (
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                    )}
                   </button>
                 </div>
               </div>

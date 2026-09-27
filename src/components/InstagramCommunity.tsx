@@ -10,7 +10,7 @@ export const InstagramCommunity: React.FC = () => {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
           <div className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#CCFF00] mb-2 font-kvant">
-            <Instagram className="w-4 h-4" /> #DERBFITS • CASABLANCA STREET MOVEMENT
+            <Instagram className="w-4 h-4" /> #PHILOSTORYAFITS • CASABLANCA STREET MOVEMENT
           </div>
           <h2 className="text-3xl sm:text-4xl font-black font-display tracking-tight text-white uppercase">
             TAG US TO BE FEATURED

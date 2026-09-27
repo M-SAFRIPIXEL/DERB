@@ -1,36 +1,31 @@
 import React from 'react';
 import { Truck, ShieldCheck, RotateCcw, Award, Zap } from 'lucide-react';
 import { GraffitiCrown } from './GraffitiEmblems';
+import { useLanguage } from '../context/LanguageContext';
 
 export const WhyChooseUs: React.FC = () => {
+  const { t } = useLanguage();
+
   const guarantees = [
     {
       icon: Award,
-      title: '500GSM Custom Fleece',
-      arabic: 'قطن مغربي ممتاز ثقيل الوزن',
-      description:
-        'Twice as thick as standard apparel. Heavyweight French terry combed fleece pre-shrunk for an enduring boxy streetwear drape.',
+      titleKey: 'why.quality.title',
+      descKey: 'why.quality.desc',
     },
     {
       icon: Truck,
-      title: 'Cash on Delivery Morocco',
-      arabic: 'الدفع عند الاستلام في كل المغرب',
-      description:
-        'Order with zero upfront risk. Inspect your items and pay cash directly to our express courier at your door.',
+      titleKey: 'why.cod.title',
+      descKey: 'why.cod.desc',
     },
     {
       icon: RotateCcw,
-      title: '14-Day Free Exchange',
-      arabic: 'تبديل القياس مجاناً خلال 14 يوم',
-      description:
-        'Need a different fit? Our courier will swap your size directly at your doorstep across 40+ Moroccan cities.',
+      titleKey: 'why.exchange.title',
+      descKey: 'why.exchange.desc',
     },
     {
       icon: ShieldCheck,
-      title: 'Casablanca Atelier Craft',
-      arabic: 'صنع بكل فخر في الدار البيضاء',
-      description:
-        'Every stitch, high-density screen print, and custom hem tag is manufactured with pride in Morocco.',
+      titleKey: 'why.craft.title',
+      descKey: 'why.craft.desc',
     },
   ];
 
@@ -39,10 +34,10 @@ export const WhyChooseUs: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <div className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-[#CCFF00] mb-2 font-kvant">
-            <GraffitiCrown size={18} /> The DERB Standard
+            <GraffitiCrown size={18} /> {t('why.subtitle')}
           </div>
           <h2 className="text-3xl sm:text-4xl font-black font-display tracking-tight text-white uppercase">
-            WHY MOROCCAN YOUTH CHOOSE US
+            {t('why.title')}
           </h2>
         </div>
 
@@ -59,13 +54,10 @@ export const WhyChooseUs: React.FC = () => {
                     <Icon className="w-6 h-6" />
                   </div>
                   <h3 className="font-black text-base text-white mb-1 font-display uppercase">
-                    {g.title}
+                    {t(g.titleKey)}
                   </h3>
-                  <p dir="rtl" className="text-sm sm:text-base font-extrabold text-[#CCFF00] font-arabic mb-2 tracking-normal">
-                    {g.arabic}
-                  </p>
                   <p className="text-xs text-white/70 leading-relaxed">
-                    {g.description}
+                    {t(g.descKey)}
                   </p>
                 </div>
               </div>

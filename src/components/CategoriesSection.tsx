@@ -37,21 +37,37 @@ export const CategoriesSection: React.FC<CategoriesSectionProps> = ({
               onClick={() => onSelectCategory(cat.categoryKey)}
               className="group relative rounded-3xl overflow-hidden bg-[#141414] border border-[#262626] hover:border-[#CCFF00]/40 shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer flex flex-col h-[360px] sm:h-[400px]"
             >
-              {/* Background Image with Zoom */}
-              <div className="absolute inset-0 overflow-hidden bg-[#0A0A0A]">
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out opacity-75 group-hover:opacity-90"
-                />
+              {/* Background Image with Zoom or Unavailable Placeholder */}
+              <div className="absolute inset-0 overflow-hidden bg-[#0D0D0D]">
+                {cat.image ? (
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700 ease-out opacity-75 group-hover:opacity-90"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#121212] via-[#0E0E0E] to-black border-2 border-dashed border-[#222]">
+                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white/30 mb-3">
+                      <span className="text-2xl font-mono">✕</span>
+                    </div>
+                    <span className="text-xs font-black font-arabic text-[#CCFF00]/80 tracking-wider">
+                      غير متاح الآن
+                    </span>
+                    <span className="text-[10px] font-mono text-white/40 uppercase mt-1">
+                      Unavailable
+                    </span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
               </div>
 
               {/* Badge */}
               <div className="relative z-10 p-5 flex justify-between items-start">
                 {cat.badge && (
-                  <span className="px-3 py-1 bg-[#CCFF00] text-black text-[11px] font-black rounded-full uppercase tracking-wider shadow-sm font-kvant">
+                  <span className={`px-3 py-1 text-[11px] font-black rounded-full uppercase tracking-wider shadow-sm font-kvant ${
+                    cat.categoryKey === 't-shirts' ? 'bg-[#CCFF00] text-black' : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                  }`}>
                     {cat.badge}
                   </span>
                 )}
